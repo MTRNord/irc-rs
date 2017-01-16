@@ -1,8 +1,9 @@
 extern crate bufstream;
 mod irc {
-    fn connect(host: String, port: u16) {
+    fn connect(host: String, port: u16, username: String, realname: String) {
       use std::net::{IpAddr, Ipv4Addr, SocketAddr, TcpStream};
       use std::io::{Write, BufRead};
+      use std::ops::Add;
       use bufstream::BufStream;
       let host_split: Vec<&str> = host.split('.').collect();
       let ServerAddress = IpAddr::V4(Ipv4Addr::new(host_split[0].as_bytes()[0], host_split[1].as_bytes()[0], host_split[2].as_bytes()[0], host_split[3].as_bytes()[0])); // Connect to localhost
@@ -11,8 +12,10 @@ mod irc {
 
       let mut stream = BufStream::new(TcpStream::connect(SocketAddress).unwrap());
 
-      stream.write(b"NICK rustbot\r\n");
-      stream.write(b"USER rustbot 8 * :rustbot\r\n");
+      let nick = format!("NICK {}\r\n", username);
+      let user = format!("USER {} 8 * : {}\r\n", username, realname);
+      stream.write(nick.as_bytes());
+      stream.write(user.as_bytes());
       stream.flush();
 
       let mut g = 1;
