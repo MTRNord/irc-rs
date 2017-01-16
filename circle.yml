@@ -5,10 +5,11 @@ dependencies:
     pre:
         - git clone --bare https://github.com/rust-lang/crates.io-index.git
         - mkdir ${HOME}/.cargo
+        - ls -la
         - |
           cat >> ${HOME}/.cargo/config <<EOF
           [registry]
-          index = "file://${HOME}/midas/crates.io-index.git"
+          index = "file://${HOME}/crates.io-index.git"
           EOF
 test:
     override:
