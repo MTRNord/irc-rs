@@ -1,7 +1,16 @@
 machine:
     pre:
         - curl -sS https://static.rust-lang.org/rustup.sh | sudo sh
+dependencies:
+    pre:
+        - git clone --bare https://github.com/rust-lang/crates.io-index.git
+        - mkdir ${HOME}/.cargo
+        - |
+          cat >> ${HOME}/.cargo/config <<EOF
+          [registry]
+          index = "file://${HOME}/midas/crates.io-index.git"
+          EOF
 test:
     override:
-        - eval `ssh-agent` && ssh-add /home/ubuntu/.ssh/id_circleci_github && cargo build -v
-        - eval `ssh-agent` && ssh-add /home/ubuntu/.ssh/id_circleci_github && cargo test -v
+        - cargo build -v
+        - cargo test -v
