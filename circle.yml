@@ -5,7 +5,7 @@ dependencies:
     pre:
         - git clone --bare https://github.com/rust-lang/crates.io-index.git
         - mkdir ${HOME}/.cargo
-        - ls -la
+        - pwd
         - |
           cat >> ${HOME}/.cargo/config <<EOF
           [registry]
