@@ -8,7 +8,7 @@ mod tests {
     fn Tconnect() {
         use irc::connect;
         let host: String = format!("130.83.198.4");
-        let username: String = format!("testbot");
+        let username: String = format!("nordbot");
         let stream = connect(host, 6667, &username, &username);
     }
 }
@@ -29,11 +29,6 @@ mod irc {
         let ip4_2: u8 = ip4_1 as _;
         let ServerAddress = IpAddr::V4(Ipv4Addr::new(ip1_2, ip2_2, ip3_2, ip4_2)); // Connect to localhost
         let SocketAddress = SocketAddr::new(ServerAddress, port);
-
-        println!("split: {}", host_split[0]);
-        println!("int bytes: {}", ip1_2);
-        println!("bytes: {}", host_split[0].as_bytes()[1]);
-        println!("bytes: {}", SocketAddress);
         let mut isConnected = false;
         let mut stream = BufStream::new(TcpStream::connect(SocketAddress).unwrap());
         let nick = format!("NICK {}\r\n", username);
@@ -51,10 +46,19 @@ mod irc {
                 if r.is_empty(){
                     g = 0;
                 }else{
-                    if r.clone().contains("004")  {
+                    let server_message_raw = r.clone();
+                    println!("{}", r.clone());
+                    if server_message_raw.contains("004")  {
                         isConnected = true;
-                    } else if r.clone().contains("PING") {
-                        stream.write(b"PONG\r\n");
+                        println!("connected");
+                    } else if server_message_raw.contains("PING") {
+                        let mut server_message_vec: Vec<&str> = server_message_raw.split("\n").collect();
+                        server_message_vec.pop();
+                        let server_message_ping_index = server_message_vec.iter().position(|&r| r.contains("PING")).unwrap();
+                        let server_message: Vec<&str> = server_message_vec[server_message_ping_index].split(" ").collect();
+                        let pong = format!("PONG :{}\r\n", server_message_vec[server_message_ping_index].trim_left());
+                        stream.write(pong.as_bytes());
+                        println!("pong");
                         stream.flush();
                     }
                 }
