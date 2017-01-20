@@ -21,8 +21,6 @@ extern crate mio;
 
 #[cfg(test)]
 mod tests {
-    use super::*;
-
     #[test]
     fn Tconnect() {
         use client::connect;
